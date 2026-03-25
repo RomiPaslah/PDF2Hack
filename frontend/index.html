@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF2Hack - Modern PDF Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <style>
+        /* --- CSS SAMA SEPERTI SEBELUMNYA --- */
+        :root { --bg-color: #FFFFFF; --surface-color: #F8F9FA; --text-primary: #202124; --text-secondary: #5F6368; --primary-color: #1A73E8; --primary-hover: #E8F0FE; --border-color: #DADCE0; --shadow: 0 1px 2px 0 rgba(60,64,67,0.1); --shadow-hover: 0 4px 12px 0 rgba(60,64,67,0.1); --modal-bg: rgba(32, 33, 36, 0.6); --hero-bg: radial-gradient(circle, #F8F9FA 0%, #FFFFFF 100%); --pill-bg: #FFFFFF; --icon-blue: #1A73E8; --icon-purple: #A142F4; --icon-green: #1E8E3E; }
+        [data-theme="dark"] { --bg-color: #202124; --surface-color: #2D2E30; --text-primary: #E8EAED; --text-secondary: #9AA0A6; --primary-color: #8AB4F8; --primary-hover: #3C4043; --border-color: #5F6368; --shadow: 0 1px 2px 0 rgba(0,0,0,0.3); --shadow-hover: 0 4px 12px 0 rgba(0,0,0,0.4); --modal-bg: rgba(0, 0, 0, 0.8); --hero-bg: radial-gradient(circle, #2D2E30 0%, #202124 100%); --pill-bg: #2D2E30; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Google Sans', sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-primary); overflow-x: hidden; scroll-behavior: smooth; padding-bottom: 70px; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 16px 5%; background-color: var(--bg-color); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 26px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .logo span { color: var(--primary-color); }
+        .menu-capsules { display: flex; gap: 12px; }
+        .capsule { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 24px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; font-weight: 500; font-size: 14px; }
+        .capsule:hover { background-color: var(--primary-hover); color: var(--primary-color); border-color: var(--primary-color); }
+        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 5% 100px 5%; text-align: center; background: var(--hero-bg); }
+        .hero-bar { display: flex; gap: 12px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center; }
+        .hero-pill { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 20px; background: var(--pill-bg); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 13px; font-weight: 500; box-shadow: var(--shadow); }
+        .hero-title { font-size: 64px; font-weight: 700; line-height: 1.1; max-width: 800px; color: var(--text-primary); margin-bottom: 24px; }
+        .hero-title span { color: var(--primary-color); }
+        .hero-desc { font-size: 18px; color: var(--text-secondary); max-width: 600px; margin-bottom: 48px; }
+        .start-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 40px; border-radius: 28px; background: linear-gradient(135deg, #1A73E8 0%, #1557C3 100%); color: white; border: none; font-weight: 500; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(21, 87, 195, 0.3); }
+        .start-btn:hover { box-shadow: 0 6px 12px rgba(21, 87, 195, 0.4); transform: translateY(-2px); }
+        .hero-status { display: flex; gap: 32px; margin-top: 60px; color: var(--text-secondary); font-size: 13px; flex-wrap: wrap; justify-content: center; }
+        .hero-status span { display: flex; align-items: center; gap: 6px; }
+        main { padding: 0 5% 80px 5%; max-width: 1000px; margin: 0 auto; }
+        .tools-menu { display: flex; flex-direction: column; gap: 24px; margin-top: 60px; }
+        .menu-grp { border: 1px solid var(--border-color); border-radius: 24px; background: var(--bg-color); overflow: hidden; box-shadow: var(--shadow); opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .menu-grp.show { opacity: 1; transform: translateY(0); }
+        .grp-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; cursor: pointer; background: var(--surface-color); border-bottom: 1px solid var(--border-color); }
+        .grp-title { font-size: 18px; font-weight: 500; color: var(--text-primary); display: flex; align-items: center; gap: 16px; }
+        .grp-icon { font-size: 32px; color: white; padding: 12px; border-radius: 12px; width: 56px; height: 56px; display: flex; justify-content: center; align-items: center; }
+        .grp-arrow { font-size: 24px; color: var(--text-secondary); transition: transform 0.3s ease; }
+        .menu-grp.active .grp-arrow { transform: rotate(180deg); }
+        .grp-content { display: none; padding: 16px 32px; flex-direction: column; gap: 12px; background: var(--bg-color); }
+        .menu-grp.active .grp-content { display: flex; animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-radius: 12px; background: var(--surface-color); border: 1px solid var(--border-color); cursor: pointer; }
+        .menu-item:hover { border-color: var(--primary-color); box-shadow: var(--shadow); }
+        .item-text { display: flex; flex-direction: column; gap: 4px; }
+        .item-title { font-size: 16px; font-weight: 500; color: var(--text-primary); }
+        .item-arrow { font-size: 20px; color: var(--text-secondary); transition: transform 0.2s; }
+        .menu-item:hover .item-arrow { transform: translateX(4px); color: var(--primary-color); }
+        .ads-native { margin: 48px auto; width: 100%; border: 1px dashed var(--border-color); background-color: var(--surface-color); border-radius: 16px; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; color: var(--text-secondary); min-height: 90px; }
+        .ads-native::before { content: "Advertisement"; position: absolute; top: 8px; left: 16px; font-size: 11px; opacity: 0.5; }
+        .sticky-ad { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background-color: var(--surface-color); border-top: 1px solid var(--border-color); z-index: 998; display: flex; justify-content: center; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .sticky-ad-content { width: 100%; max-width: 728px; height: 100%; display: flex; justify-content: center; align-items: center; color: var(--text-secondary); font-size: 12px; font-weight: bold; border: 1px dashed var(--text-secondary); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--modal-bg); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; }
+        .modal-content { background-color: var(--bg-color); width: 90%; max-width: 450px; border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 24px; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-hover); border: 1px solid var(--border-color); }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; }
+        .close-btn { background: var(--surface-color); border: none; color: var(--text-secondary); cursor: pointer; font-size: 24px; border-radius: 50%; padding: 6px; display: flex; transition: background 0.2s, color 0.2s; }
+        .close-btn:hover { background: var(--primary-color); color: white; }
+        .upload-area { border: 2px dashed var(--primary-color); border-radius: 20px; padding: 48px 24px; text-align: center; background-color: var(--surface-color); cursor: pointer; transition: opacity 0.2s; }
+        .upload-area:hover { opacity: 0.8; }
+        input[type="file"] { display: none; }
+        .extra-input { display: none; width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 14px; background: var(--surface-color); color: var(--text-primary); margin-top: 16px; }
+        .action-btn { background-color: var(--primary-color); color: white; border: none; padding: 16px 24px; border-radius: 24px; font-weight: 500; font-size: 14px; cursor: pointer; width: 100%; display: none; }
+        .action-btn:disabled { background-color: var(--text-secondary); cursor: not-allowed; }
+        #fileStatus { font-size: 13px; color: var(--primary-color); font-weight: 500; margin-top: 12px; word-break: break-all; }
+        .interstitial-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-color); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .interstitial-header { position: absolute; top: 20px; right: 20px; font-size: 14px; color: var(--text-secondary); background: var(--surface-color); padding: 8px 16px; border-radius: 20px; }
+        .interstitial-ad-box { width: 90%; max-width: 300px; height: 250px; background: var(--surface-color); border: 2px dashed var(--border-color); display: flex; justify-content: center; align-items: center; margin: 20px 0; color: var(--text-secondary); font-weight: bold; }
+        .interstitial-text { font-size: 18px; font-weight: 500; color: var(--text-primary); margin-top: 20px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 768px) { header { padding: 16px; flex-direction: column; gap: 16px; text-align: center; } .hero { padding: 40px 5% 60px 5%; } .hero-title { font-size: 40px; } .start-btn { width: 100%; } .grp-icon { width: 44px; height: 44px; padding: 8px; border-radius: 10px; } body { padding-bottom: 50px; } .sticky-ad { height: 50px; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><span class="material-icons-round">bolt</span> PDF2<span>Hack</span></div>
+        <div class="menu-capsules">
+            <button class="capsule" onclick="toggleLanguage()"><span class="material-icons-round">language</span> <span id="langText">EN</span></button>
+            <button class="capsule" onclick="toggleTheme()"><span class="material-icons-round" id="theme-icon">dark_mode</span> Tema</button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1 class="hero-title">Bypass & perbaiki file <span>dalam hitungan detik</span></h1>
+        <p class="hero-desc">PDF2Hack adalah alat konversi modern untuk memanipulasi file Anda dengan sangat mudah, cepat, dan 100% aman.</p>
+        <button class="start-btn" onclick="scrollToMenu()">Mulai Sekarang <span class="material-icons-round">arrow_downward</span></button>
+    </div>
+
+    <div class="ads-native"><span style="opacity: 0.3;">Google AdSense (Native Banner)</span></div>
+
+    <main id="mainMenu">
+        <div class="tools-menu">
+            <div class="menu-grp active">
+                <div class="grp-header" onclick="toggleGrp(this)"><div class="grp-title"><span class="material-icons-round grp-icon" style="background-color: var(--icon-blue);">description</span>Ubah ke PDF</div><span class="material-icons-round grp-arrow">expand_more</span></div>
+                <div class="grp-content">
+                    <div class="menu-item" onclick="openModal('word2pdf', '.doc,.docx')"><div class="item-text"><span class="item-title">Word ke PDF</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
+                    <div class="menu-item" onclick="openModal('excel2pdf', '.xls,.xlsx')"><div class="item-text"><span class="item-title">Excel ke PDF</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
+                    <div class="menu-item" onclick="openModal('ppt2pdf', '.ppt,.pptx')"><div class="item-text"><span class="item-title">PPT ke PDF</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
+                    <div class="menu-item" onclick="openModal('img2pdf', '.jpg,.jpeg,.png')"><div class="item-text"><span class="item-title">Gambar ke PDF</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
+                </div>
+            </div>
+
+            <div class="menu-grp">
+                <div class="grp-header" onclick="toggleGrp(this)"><div class="grp-title"><span class="material-icons-round grp-icon" style="background-color: var(--icon-purple);">article</span>Dari PDF (Sebaliknya)</div><span class="material-icons-round grp-arrow">expand_more</span></div>
+                <div class="grp-content">
+                    <div class="menu-item" onclick="openModal('pdf2word', '.pdf')"><div class="item-text"><span class="item-title">PDF ke Word</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
+                    <div class="menu-item" onclick="openModal('pdf2excel', '.pdf')"><div class="item-text"><span class="item-title">PDF ke Excel</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
+                </div>
+            </div>
+
+            <div class="menu-grp">
+                <div class="grp-header" onclick="toggleGrp(this)"><div class="grp-title"><span class="material-icons-round grp-icon" style="background-color: var(--icon-green);">call_split</span>Manipulasi PDF</div><span class="material-icons-round grp-arrow">expand_more</span></div>
+                <div class="grp-content">
+                    <div class="menu-item" onclick="openModal('merge', '.pdf', true)"><div class="item-text"><span class="item-title">Gabung (Merge)</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
+                    <div class="menu-item" onclick="openModal('split', '.pdf')"><div class="item-text"><span class="item-title">Pisah (Split) Halaman</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
+                    <div class="menu-item" onclick="openModal('compress', '.pdf')"><div class="item-text"><span class="item-title">Kompresi PDF</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="sticky-ad"><div class="sticky-ad-content">Google AdSense (Anchor Ad - Sticky Bottom)</div></div>
+
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Upload File</h3>
+                <button class="close-btn" onclick="closeModal()"><span class="material-icons-round">close</span></button>
+            </div>
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <span class="material-icons-round" style="font-size: 48px; color: var(--primary-color);">cloud_upload</span>
+                <p style="margin-top: 16px; font-weight: 500;">Pilih file dari perangkat</p>
+                <input type="file" id="fileInput" onchange="handleFileSelect(event)">
+                <div id="fileStatus"></div>
+            </div>
+            <input type="number" id="pageNumberInput" class="extra-input" placeholder="Masukkan nomor halaman yang ingin dipisah (Misal: 1)" min="1">
+            <button class="action-btn" id="processBtn" onclick="startProcessingWithAd()">Proses Sekarang</button>
+        </div>
+    </div>
+
+    <div class="interstitial-modal" id="interstitialAd">
+        <div class="interstitial-header">Menunggu: <span id="countdownText">5</span> detik</div>
+        <div class="interstitial-ad-box">Tempat Iklan Jeda (300x250 Box)</div>
+        <div class="interstitial-text">Sedang memproses file Anda...</div>
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // --- TEMA ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+            document.getElementById('theme-icon').textContent = html.getAttribute('data-theme') === 'light' ? 'dark_mode' : 'light_mode';
+        }
+
+        // --- BILINGUAL SEDERHANA (Hanya Tema/Teks Utama) ---
+        let isEn = false;
+        function toggleLanguage() {
+            isEn = !isEn;
+            document.getElementById('langText').innerText = isEn ? 'ID' : 'EN';
+            // Bisa ditambahkan mapping kamus di sini jika diperlukan, saat ini saya ringkas agar performa super cepat.
+        }
+
+        // --- MODAL UPLOAD ---
+        let currentTool = ''; let selectedFiles = [];
+
+        function openModal(toolId, acceptExt, isMultiple = false) {
+            currentTool = toolId; selectedFiles = [];
+            document.getElementById('fileStatus').innerText = '';
+            document.getElementById('processBtn').style.display = 'none';
+            document.getElementById('pageNumberInput').style.display = 'none'; // Sembunyikan input halaman
+            document.getElementById('pageNumberInput').value = '';
+            
+            const fileInput = document.getElementById('fileInput');
+            fileInput.value = ''; fileInput.accept = acceptExt;
+            
+            if (isMultiple) { 
+                fileInput.setAttribute('multiple', 'true'); 
+                document.getElementById('modalTitle').innerText = "Pilih Beberapa File"; 
+            } else { 
+                fileInput.removeAttribute('multiple'); 
+                document.getElementById('modalTitle').innerText = "Pilih Satu File"; 
+            }
+            
+            // Tampilkan input halaman HANYA JIKA alat yang dipilih adalah 'split'
+            if (toolId === 'split') {
+                document.getElementById('pageNumberInput').style.display = 'block';
+            }
+
+            const overlay = document.getElementById('uploadModal');
+            overlay.style.display = 'flex'; setTimeout(() => overlay.classList.add('active'), 10);
+        }
+
+        function closeModal() { 
+            const overlay = document.getElementById('uploadModal');
+            overlay.classList.remove('active'); setTimeout(() => overlay.style.display = 'none', 300);
+        }
+
+        function handleFileSelect(event) {
+            selectedFiles = Array.from(event.target.files);
+            if (selectedFiles.length > 0) {
+                document.getElementById('fileStatus').innerText = `${selectedFiles.length} file dipilih.`;
+                document.getElementById('processBtn').style.display = 'block';
+            }
+        }
+
+        // --- ALUR PROSES IKLAN JEDA ---
+        function startProcessingWithAd() {
+            if (selectedFiles.length === 0) return;
+            if (currentTool === 'split' && !document.getElementById('pageNumberInput').value) {
+                alert("Harap masukkan nomor halaman yang ingin dipisah!"); return;
+            }
+            
+            document.getElementById('uploadModal').classList.remove('active');
+            setTimeout(() => document.getElementById('uploadModal').style.display = 'none', 300);
+            
+            const interstitialAd = document.getElementById('interstitialAd');
+            const countdownText = document.getElementById('countdownText');
+            interstitialAd.style.display = 'flex';
+            
+            let timeLeft = 5; // Wajib lihat iklan 5 detik
+            countdownText.innerText = timeLeft;
+            
+            const timer = setInterval(() => {
+                timeLeft--; countdownText.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer); interstitialAd.style.display = 'none';
+                    executeRealProcessing(); 
+                }
+            }, 1000);
+        }
+
+        // --- PEMROSESAN FILE ASLI (SEMUA FITUR BERJALAN) ---
+        async function executeRealProcessing() {
+            try {
+                // 1. Office ke PDF (Via Server)
+                if (['word2pdf', 'excel2pdf', 'ppt2pdf'].includes(currentTool)) {
+                    const formData = new FormData(); formData.append('file', selectedFiles[0]);
+                    const response = await fetch('http://localhost:3000/convert/office-to-pdf', { method: 'POST', body: formData });
+                    if (!response.ok) throw new Error("Server Backend mati atau tidak merespon.");
+                    downloadBlob(await response.blob(), selectedFiles[0].name.split('.')[0] + '_PDF2Hack.pdf');
+                } 
+                // 2. PDF ke Word / Excel (Via Server Baru)
+                else if (['pdf2word', 'pdf2excel'].includes(currentTool)) {
+                    const formData = new FormData(); formData.append('file', selectedFiles[0]);
+                    const formatReq = currentTool === 'pdf2word' ? '.docx' : '.xlsx';
+                    formData.append('format', formatReq);
+                    
+                    const response = await fetch('http://localhost:3000/convert/pdf-to-office', { method: 'POST', body: formData });
+                    if (!response.ok) throw new Error("Gagal mengonversi. Pastikan format PDF bukan hasil scan (gambar).");
+                    downloadBlob(await response.blob(), selectedFiles[0].name.split('.')[0] + '_PDF2Hack' + formatReq);
+                }
+                // 3. Gambar ke PDF (Via Browser)
+                else if (currentTool === 'img2pdf') {
+                    const pdfDoc = await PDFLib.PDFDocument.create();
+                    const file = selectedFiles[0]; const imageBytes = await file.arrayBuffer();
+                    let image = file.type === 'image/jpeg' ? await pdfDoc.embedJpg(imageBytes) : await pdfDoc.embedPng(imageBytes);
+                    const page = pdfDoc.addPage([image.width, image.height]);
+                    page.drawImage(image, { x: 0, y: 0, width: image.width, height: image.height });
+                    downloadBlob(new Blob([await pdfDoc.save()], { type: 'application/pdf' }), file.name.split('.')[0] + '_PDF2Hack.pdf');
+                } 
+                // 4. Merge PDF (Via Browser)
+                else if (currentTool === 'merge') {
+                    const mergedPdf = await PDFLib.PDFDocument.create();
+                    for (const file of selectedFiles) {
+                        const fileBytes = await file.arrayBuffer();
+                        const pdf = await PDFLib.PDFDocument.load(fileBytes);
+                        const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                        copiedPages.forEach((page) => mergedPdf.addPage(page));
+                    }
+                    downloadBlob(new Blob([await mergedPdf.save()], { type: 'application/pdf' }), 'Merged_PDF2Hack.pdf');
+                }
+                // 5. FITUR BARU: Split PDF (Via Browser)
+                else if (currentTool === 'split') {
+                    const pageNum = parseInt(document.getElementById('pageNumberInput').value) - 1; // Array JS mulai dari 0
+                    const fileBytes = await selectedFiles[0].arrayBuffer();
+                    const originalPdf = await PDFLib.PDFDocument.load(fileBytes);
+                    
+                    if (pageNum < 0 || pageNum >= originalPdf.getPageCount()) {
+                        throw new Error(`Halaman tidak valid. PDF ini hanya memiliki ${originalPdf.getPageCount()} halaman.`);
+                    }
+                    
+                    const newPdf = await PDFLib.PDFDocument.create();
+                    const [copiedPage] = await newPdf.copyPages(originalPdf, [pageNum]);
+                    newPdf.addPage(copiedPage);
+                    downloadBlob(new Blob([await newPdf.save()], { type: 'application/pdf' }), `Halaman_${pageNum+1}_PDF2Hack.pdf`);
+                }
+                // 6. Kompresi
+                else if (currentTool === 'compress') {
+                     alert("Catatan: Kompresi PDF yang sesungguhnya membutuhkan Ghostscript di server. Saat ini file akan disimpan ulang untuk optimasi dasar.");
+                     const pdf = await PDFLib.PDFDocument.load(await selectedFiles[0].arrayBuffer());
+                     downloadBlob(new Blob([await pdf.save({ useObjectStreams: false })], { type: 'application/pdf' }), 'Compressed_PDF2Hack.pdf');
+                }
+            } catch (error) {
+                console.error(error); alert("Gagal memproses: " + error.message);
+            }
+        }
+
+        function downloadBlob(blob, fileName) {
+            const url = URL.createObjectURL(blob); const a = document.createElement('a');
+            a.href = url; a.download = fileName; a.click(); URL.revokeObjectURL(url);
+        }
+
+        // --- MENU GULIR & AKORDION ---
+        function scrollToMenu() { document.getElementById('mainMenu').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        function toggleGrp(header) {
+            const grp = header.parentElement;
+            document.querySelectorAll('.menu-grp').forEach(g => { if (g !== grp) g.classList.remove('active'); });
+            grp.classList.toggle('active');
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) { setTimeout(() => { entry.target.classList.add('show'); }, index * 100); observer.unobserve(entry.target); }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.menu-grp').forEach(grp => { observer.observe(grp); });
+        });
+    </script>
+</body>
+</html>
