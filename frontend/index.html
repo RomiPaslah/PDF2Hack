@@ -22,24 +22,30 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Google Sans', sans-serif; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
         body { background-color: var(--bg-color); color: var(--text-primary); overflow-x: hidden; scroll-behavior: smooth; padding-bottom: 70px; }
         
-        /* === LAYOUT UTAMA & HEADER === */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 16px 5%; background-color: var(--bg-color); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 26px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; text-decoration: none;}
+        /* === HEADER & TOP NAVIGATION (BARU) === */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 12px 5%; background-color: var(--bg-color); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 24px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; text-decoration: none; flex-shrink: 0;}
         .logo span { color: var(--primary-color); }
-        .menu-capsules { display: flex; gap: 10px; align-items: center;}
-        .capsule { display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 24px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; font-weight: 500; font-size: 14px; position: relative;}
+        
+        /* Navigasi Tengah */
+        .top-nav { display: flex; gap: 24px; align-items: center; flex-grow: 1; justify-content: center; }
+        .nav-item { position: relative; padding: 10px 0; color: var(--text-primary); font-weight: 500; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: color 0.2s; }
+        .nav-item:hover { color: var(--primary-color); }
+        .nav-item .material-icons-round { font-size: 16px; color: var(--text-secondary); transition: transform 0.2s; }
+        .nav-item:hover .material-icons-round { transform: rotate(180deg); color: var(--primary-color); }
+        
+        /* Dropdown Animasi Pop-up */
+        .nav-dropdown { visibility: hidden; opacity: 0; position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(15px); background: var(--surface-color); min-width: 220px; box-shadow: var(--shadow-hover); border-radius: 16px; border: 1px solid var(--border-color); padding: 8px 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 200; pointer-events: none; }
+        .nav-item:hover .nav-dropdown { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+        .nav-dropdown a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--text-primary); text-decoration: none; font-size: 14px; transition: background 0.2s; }
+        .nav-dropdown a:hover { background-color: var(--primary-hover); color: var(--primary-color); }
+        .nav-dropdown a .material-icons-round { font-size: 18px; color: var(--text-secondary); transform: none !important;}
+        .nav-dropdown a:hover .material-icons-round { color: var(--primary-color); }
+
+        .menu-capsules { display: flex; gap: 10px; align-items: center; flex-shrink: 0;}
+        .capsule { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 20px; background: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); cursor: pointer; font-weight: 500; font-size: 13px; }
         .capsule:hover { background-color: var(--primary-hover); color: var(--primary-color); border-color: var(--primary-color); }
         
-        /* === DROPDOWN MENU TOP BAR === */
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-content { visibility: hidden; opacity: 0; position: absolute; right: 0; top: 120%; background-color: var(--surface-color); min-width: 220px; box-shadow: var(--shadow-hover); border-radius: 16px; border: 1px solid var(--border-color); z-index: 101; transform: translateY(-10px); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s; padding: 8px 0; max-height: 70vh; overflow-y: auto;}
-        .dropdown.active .dropdown-content { visibility: visible; opacity: 1; transform: translateY(0); }
-        .dropdown-content .dd-group { padding: 8px 16px; font-size: 11px; font-weight: bold; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.5px; }
-        .dropdown-content a { color: var(--text-primary); padding: 10px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 14px; transition: background 0.2s; }
-        .dropdown-content a:hover { background-color: var(--primary-hover); color: var(--primary-color); }
-        .dropdown-content .material-icons-round { font-size: 18px; color: var(--text-secondary); }
-        .dropdown-content a:hover .material-icons-round { color: var(--primary-color); }
-
         /* === HERO SECTION === */
         .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 5% 100px 5%; text-align: center; background: var(--hero-bg); }
         .hero-title { font-size: 64px; font-weight: 700; line-height: 1.1; max-width: 800px; color: var(--text-primary); margin-bottom: 24px; }
@@ -58,14 +64,14 @@
         .grp-icon { font-size: 32px; color: white; padding: 12px; border-radius: 12px; width: 56px; height: 56px; display: flex; justify-content: center; align-items: center; }
         .grp-arrow { font-size: 24px; color: var(--text-secondary); transition: transform 0.3s ease; }
         .menu-grp.active .grp-arrow { transform: rotate(180deg); }
-        .grp-content { display: none; padding: 16px 32px; flex-direction: column; gap: 12px; background: var(--bg-color); }
-        .menu-grp.active .grp-content { display: flex; animation: fadeIn 0.3s ease-in; }
+        .grp-content { display: none; padding: 16px 32px; grid-template-columns: 1fr 1fr; gap: 16px; background: var(--bg-color); }
+        .menu-grp.active .grp-content { display: grid; animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-radius: 12px; background: var(--surface-color); border: 1px solid var(--border-color); cursor: pointer; }
         .menu-item:hover { border-color: var(--primary-color); box-shadow: var(--shadow); }
         .item-text { display: flex; flex-direction: column; gap: 4px; }
         .item-title { font-size: 16px; font-weight: 500; color: var(--text-primary); }
-        .item-desc { font-size: 13px; color: var(--text-secondary); max-width: 350px; line-height: 1.4; }
+        .item-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
         .item-arrow { font-size: 20px; color: var(--text-secondary); transition: transform 0.2s; }
         .menu-item:hover .item-arrow { transform: translateX(4px); color: var(--primary-color); }
         
@@ -97,39 +103,45 @@
         .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
 
         /* === CV BUILDER KHUSUS === */
-        .cv-promo { background: linear-gradient(135deg, var(--bg-color) 0%, var(--primary-hover) 100%); border-color: var(--primary-color); }
+        .cv-promo { background: linear-gradient(135deg, var(--bg-color) 0%, var(--primary-hover) 100%); border-color: var(--primary-color); grid-column: span 2;}
         .cv-promo .item-title { color: var(--primary-color); font-weight: 700; font-size: 18px; }
         
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes pulseAlert { 0% { box-shadow: 0 0 0 0 rgba(26, 115, 232, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(26, 115, 232, 0); } 100% { box-shadow: 0 0 0 0 rgba(26, 115, 232, 0); } }
         
-        #cvModal .modal-content { max-width: 850px; width: 95%; background: #e0e0e0; animation: slideUp 0.4s ease-out; }
+        #cvModal .modal-content { max-width: 850px; width: 95%; background: #e0e0e0; animation: slideUp 0.4s ease-out; padding: 20px;}
         .cv-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: white; padding: 12px 20px; border-radius: 12px; box-shadow: var(--shadow); flex-wrap: wrap; gap: 10px;}
         .cv-alert { background: var(--primary-hover); color: var(--primary-color); padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 8px; animation: pulseAlert 2s infinite; }
         
-        /* Kertas A4 CV (ATS Friendly CSS) - Margin lebih kecil & font Times New Roman */
-        .cv-a4 { background: white; width: 100%; max-width: 210mm; min-height: 297mm; margin: 0 auto; padding: 12mm 15mm; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; font-family: 'Times New Roman', Times, serif; color: black; line-height: 1.4; outline: none; }
+        /* Kertas A4 CV (ATS Friendly CSS) - SANGAT RAPIH & SEJAJAR */
+        .cv-a4 { background: white; width: 100%; max-width: 210mm; min-height: 297mm; margin: 0 auto; padding: 15mm 20mm; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; font-family: 'Times New Roman', Times, serif; color: black; line-height: 1.5; outline: none; }
         .cv-a4:focus { box-shadow: 0 0 0 3px var(--primary-color); }
         
-        /* Desain ATS Format */
-        .cv-header { text-align: center; margin-bottom: 15px; }
-        .cv-header h1 { font-size: 24px; font-weight: bold; margin: 0 0 4px 0; text-transform: capitalize; color: black;}
-        .cv-header p { font-size: 13px; margin: 0; color: black;}
-        .cv-summary { font-size: 13px; text-align: justify; margin-bottom: 15px; color: black;}
-        .cv-section { margin-bottom: 12px; }
-        .cv-section h2 { font-size: 14px; font-weight: bold; text-transform: uppercase; margin: 0 0 4px 0; border-bottom: 2px solid black; padding-bottom: 2px; color: black;}
-        .cv-item { margin-top: 6px; margin-bottom: 6px; }
-        .cv-item-header { display: flex; justify-content: space-between; align-items:baseline; font-size: 13px; }
-        .cv-item-header strong { font-weight: bold; }
-        .cv-item-header span { font-size: 13px; white-space: nowrap; margin-left: 10px;}
-        .cv-item-sub { font-size: 13px; font-style: italic; margin-bottom: 2px; }
-        .cv-bullets { margin: 2px 0 0 20px; padding: 0; font-size: 13px; }
-        .cv-bullets li { margin-bottom: 2px; }
+        /* Desain ATS Format (Pixel Perfect) */
+        .cv-header { text-align: center; margin-bottom: 16px; }
+        .cv-header h1 { font-size: 22px; font-weight: bold; margin: 0 0 4px 0; text-transform: uppercase; color: black; letter-spacing: 1px;}
+        .cv-header p { font-size: 11pt; margin: 0; color: black;}
         
-        .cv-skills { font-size: 13px; margin-top: 6px; }
-        .cv-skills strong { font-weight: bold; }
+        .cv-summary { font-size: 11pt; text-align: justify; margin-bottom: 16px; color: black;}
+        
+        .cv-section { margin-bottom: 16px; }
+        .cv-section h2 { font-size: 12pt; font-weight: bold; text-transform: uppercase; margin: 0 0 8px 0; border-bottom: 2px solid black; padding-bottom: 2px; color: black;}
+        
+        .cv-item { margin-bottom: 10px; }
+        .cv-item-header { display: flex; justify-content: space-between; align-items: flex-start; font-size: 11pt; margin-bottom: 2px;}
+        .cv-item-header strong { font-weight: bold; flex-grow: 1; padding-right: 10px; } /* Memastikan judul muat dan sejajar */
+        .cv-item-header span { font-size: 11pt; white-space: nowrap; flex-shrink: 0; text-align: right; } /* Tanggal TERKUNCI di Kanan */
+        
+        .cv-item-sub { font-size: 11pt; font-style: italic; margin-bottom: 4px; }
+        
+        .cv-bullets { margin: 2px 0 0 20px; padding: 0; font-size: 11pt; list-style-type: disc; }
+        .cv-bullets li { margin-bottom: 3px; padding-left: 4px;}
+        
+        .cv-skills { font-size: 11pt; margin-top: 8px; }
+        .cv-skills-group { margin-bottom: 8px;}
+        .cv-skills-group strong { font-weight: bold; display: block; margin-bottom: 2px;}
         .cv-skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-left: 20px; }
-        .cv-skills-grid ul { margin: 0; padding-left: 15px; }
+        .cv-skills-grid ul { margin: 0; padding-left: 0; list-style-position: inside; }
 
         .btn-download-cv { background-color: var(--icon-green); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 14px; }
         .btn-download-word { background-color: var(--icon-blue); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 14px; }
@@ -140,35 +152,63 @@
         @media print {
             body * { visibility: hidden; }
             #cv-document, #cv-document * { visibility: visible; }
-            #cv-document { position: absolute; left: 0; top: 0; margin: 0; padding: 10mm; width: 100%; box-shadow: none; border-radius: 0; background: white;}
+            #cv-document { position: absolute; left: 0; top: 0; margin: 0; padding: 10mm 15mm; width: 100%; box-shadow: none; border-radius: 0; background: white;}
             .cv-toolbar, header, .hero, main, .sticky-ad, .ads-native, .modal-header { display: none !important; }
+            @page { margin: 0; } /* Menghilangkan header/footer bawaan browser */
         }
-        @media (max-width: 768px) { header { padding: 16px; flex-direction: column; gap: 16px; text-align: center; } .hero { padding: 40px 5% 60px 5%; } .hero-title { font-size: 40px; } .start-btn { width: 100%; } body { padding-bottom: 50px; } .sticky-ad { height: 50px; } .cv-a4 { padding: 10mm; font-size: 12px;} .cv-item-header { flex-direction: column; align-items: flex-start;} .cv-item-header span {margin-left: 0; margin-top: 2px; color: #555;} .dropdown-content { position: static; visibility: visible; opacity: 1; display: none; box-shadow: none; border: none; width: 100%; transform: none;} .dropdown.active .dropdown-content { display: block; } }
+
+        /* RESPONSIVE UNTUK MOBILE */
+        @media (max-width: 900px) {
+            .top-nav { display: none; } /* Sembunyikan navigasi atas di HP agar tidak sempit */
+            .grp-content { grid-template-columns: 1fr; } /* Menu utama jadi 1 kolom di HP */
+            .cv-promo { grid-column: span 1; }
+        }
+        @media (max-width: 768px) { header { padding: 16px; flex-wrap: wrap; gap: 16px;} .hero { padding: 40px 5% 60px 5%; } .hero-title { font-size: 40px; } .start-btn { width: 100%; } body { padding-bottom: 50px; } .sticky-ad { height: 50px; } .cv-a4 { padding: 10mm; font-size: 10pt;} .cv-item-header { flex-direction: column; align-items: flex-start;} .cv-item-header span {margin-left: 0; margin-top: 2px; color: #555;} .cv-skills-grid { grid-template-columns: 1fr; margin-left: 0;} .cv-skills-grid ul { padding-left: 20px; list-style-position: outside; } }
     </style>
 </head>
 <body>
 
     <header>
         <a href="#" class="logo"><span class="material-icons-round">bolt</span> PDF2<span>Hack</span></a>
-        <div class="menu-capsules">
+        
+        <nav class="top-nav">
+            <div class="nav-item">
+                <span data-en="To PDF" data-id="Ke PDF">Ke PDF</span> <span class="material-icons-round">expand_more</span>
+                <div class="nav-dropdown">
+                    <a href="#" onclick="openModal('word2pdf', '.doc,.docx')"><span class="material-icons-round">description</span> <span data-en="Word to PDF" data-id="Word ke PDF">Word ke PDF</span></a>
+                    <a href="#" onclick="openModal('excel2pdf', '.xls,.xlsx')"><span class="material-icons-round">table_view</span> <span data-en="Excel to PDF" data-id="Excel ke PDF">Excel ke PDF</span></a>
+                    <a href="#" onclick="openModal('ppt2pdf', '.ppt,.pptx')"><span class="material-icons-round">slideshow</span> <span data-en="PPT to PDF" data-id="PPT ke PDF">PPT ke PDF</span></a>
+                    <a href="#" onclick="openModal('img2pdf', '.jpg,.jpeg,.png')"><span class="material-icons-round">image</span> <span data-en="Image to PDF" data-id="Gambar ke PDF">Gambar ke PDF</span></a>
+                </div>
+            </div>
             
-            <div class="dropdown" id="toolsDropdownMenu">
-                <button class="capsule" onclick="toggleDropdown()"><span class="material-icons-round">apps</span> <span data-en="Tools" data-id="Alat">Alat</span></button>
-                <div class="dropdown-content">
-                    <div class="dd-group" data-en="Convert" data-id="Ubah">Ubah</div>
-                    <a href="#" onclick="openModal('word2pdf', '.doc,.docx'); toggleDropdown()"><span class="material-icons-round">description</span> <span data-en="Word to PDF" data-id="Word ke PDF">Word ke PDF</span></a>
-                    <a href="#" onclick="openModal('img2pdf', '.jpg,.jpeg,.png'); toggleDropdown()"><span class="material-icons-round">image</span> <span data-en="Image to PDF" data-id="Gambar ke PDF">Gambar ke PDF</span></a>
-                    
-                    <div class="dd-group" data-en="Manipulate" data-id="Manipulasi">Manipulasi</div>
-                    <a href="#" onclick="openModal('merge', '.pdf', true); toggleDropdown()"><span class="material-icons-round">layers</span> <span data-en="Merge PDF" data-id="Gabung PDF">Gabung PDF</span></a>
-                    <a href="#" onclick="openModal('split', '.pdf'); toggleDropdown()"><span class="material-icons-round">call_split</span> <span data-en="Split PDF" data-id="Pisah PDF">Pisah PDF</span></a>
-                    <a href="#" onclick="openModal('compress', '.pdf'); toggleDropdown()"><span class="material-icons-round">compress</span> <span data-en="Compress PDF" data-id="Kompresi PDF">Kompresi PDF</span></a>
-                    
-                    <div class="dd-group" data-en="Career" data-id="Karir">Karir</div>
-                    <a href="#" onclick="openCvModal(); toggleDropdown()"><span class="material-icons-round">edit_document</span> <span data-en="CV ATS Builder" data-id="Pembuat CV ATS">Pembuat CV ATS</span></a>
+            <div class="nav-item">
+                <span data-en="From PDF" data-id="Dari PDF">Dari PDF</span> <span class="material-icons-round">expand_more</span>
+                <div class="nav-dropdown">
+                    <a href="#" onclick="openModal('pdf2word', '.pdf')"><span class="material-icons-round">text_snippet</span> <span data-en="PDF to Word" data-id="PDF ke Word">PDF ke Word</span></a>
+                    <a href="#" onclick="openModal('pdf2excel', '.pdf')"><span class="material-icons-round">grid_on</span> <span data-en="PDF to Excel" data-id="PDF ke Excel">PDF ke Excel</span></a>
+                    <a href="#" onclick="openModal('ocr', '.pdf,.jpg,.png')"><span class="material-icons-round">document_scanner</span> <span data-en="Extract Text (OCR)" data-id="Ekstrak Teks (OCR)">Ekstrak Teks (OCR)</span></a>
                 </div>
             </div>
 
+            <div class="nav-item">
+                <span data-en="Manipulate" data-id="Manipulasi">Manipulasi</span> <span class="material-icons-round">expand_more</span>
+                <div class="nav-dropdown">
+                    <a href="#" onclick="openModal('merge', '.pdf', true)"><span class="material-icons-round">layers</span> <span data-en="Merge PDF" data-id="Gabung PDF">Gabung PDF</span></a>
+                    <a href="#" onclick="openModal('split', '.pdf')"><span class="material-icons-round">call_split</span> <span data-en="Split PDF" data-id="Pisah PDF">Pisah PDF</span></a>
+                    <a href="#" onclick="openModal('compress', '.pdf')"><span class="material-icons-round">compress</span> <span data-en="Compress PDF" data-id="Kompres PDF">Kompres PDF</span></a>
+                    <a href="#" onclick="openModal('rotate', '.pdf')"><span class="material-icons-round">rotate_right</span> <span data-en="Rotate PDF" data-id="Putar PDF">Putar PDF</span></a>
+                    <a href="#" onclick="openModal('watermark', '.pdf')"><span class="material-icons-round">branding_watermark</span> <span data-en="Watermark" data-id="Watermark">Watermark</span></a>
+                    <a href="#" onclick="openModal('pagenumbers', '.pdf')"><span class="material-icons-round">format_list_numbered</span> <span data-en="Page Numbers" data-id="Nomor Halaman">Nomor Halaman</span></a>
+                </div>
+            </div>
+
+            <div class="nav-item" onclick="openCvModal()">
+                <span style="color: var(--primary-color); font-weight: bold;" data-en="CV ATS Builder" data-id="Pembuat CV ATS">Pembuat CV ATS</span> <span class="material-icons-round" style="color: var(--primary-color);">edit_document</span>
+            </div>
+        </nav>
+
+        <div class="menu-capsules">
             <button class="capsule" onclick="toggleLanguage()"><span class="material-icons-round">language</span> <span id="langText">EN</span></button>
             <button class="capsule" onclick="toggleTheme()"><span class="material-icons-round" id="theme-icon">dark_mode</span> <span data-en="Theme" data-id="Tema">Tema</span></button>
         </div>
@@ -216,14 +256,6 @@
                     <div class="menu-item" onclick="openModal('rotate', '.pdf')"><div class="item-text"><span class="item-title" data-en="Rotate Pages" data-id="Putar (Rotate) Halaman">Putar (Rotate) Halaman</span><span class="item-desc" data-en="Fix upside-down PDF pages." data-id="Halaman PDF terbalik? Luruskan dengan satu klik.">Halaman PDF terbalik? Luruskan dengan satu klik.</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
                     <div class="menu-item" onclick="openModal('watermark', '.pdf')"><div class="item-text"><span class="item-title" data-en="Watermark PDF" data-id="Watermark PDF">Watermark PDF</span><span class="item-desc" data-en="Secure documents with text watermark." data-id="Amankan kepemilikan dokumen dengan tanda air (teks).">Amankan kepemilikan dokumen dengan tanda air (teks).</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
                     <div class="menu-item" onclick="openModal('pagenumbers', '.pdf')"><div class="item-text"><span class="item-title" data-en="Add Page Numbers" data-id="Beri Nomor Halaman">Beri Nomor Halaman</span><span class="item-desc" data-en="Add automatic page numbering." data-id="Tambahkan penomoran halaman otomatis biar rapi.">Tambahkan penomoran halaman otomatis biar rapi.</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
-                </div>
-            </div>
-
-            <div class="menu-grp">
-                <div class="grp-header" onclick="toggleGrp(this)"><div class="grp-title"><span class="material-icons-round grp-icon" style="background-color: var(--icon-red);">lock</span><span data-en="PDF Security" data-id="Keamanan PDF">Keamanan PDF</span></div><span class="material-icons-round grp-arrow">expand_more</span></div>
-                <div class="grp-content">
-                    <div class="menu-item" onclick="openModal('protect', '.pdf')"><div class="item-text"><span class="item-title" data-en="Protect PDF" data-id="Kunci (Protect) PDF">Kunci (Protect) PDF</span><span class="item-desc" data-en="Secure sensitive PDF with strong password." data-id="Amankan PDF sensitif Anda dengan *password* kuat.">Amankan PDF sensitif Anda dengan *password* kuat.</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
-                    <div class="menu-item" onclick="openModal('unlock', '.pdf')"><div class="item-text"><span class="item-title" data-en="Unlock PDF" data-id="Buka Kunci PDF">Buka Kunci PDF</span><span class="item-desc" data-en="Remove password from your PDF." data-id="Hapus *password* dari PDF Anda untuk kemudahan akses.">Hapus *password* dari PDF Anda untuk kemudahan akses.</span></div><span class="material-icons-round item-arrow">arrow_forward</span></div>
                 </div>
             </div>
 
@@ -370,23 +402,27 @@
                 <div class="cv-section">
                     <h2>KEAHLIAN</h2>
                     <div class="cv-skills">
-                        <strong>Soft Skill:</strong>
-                        <ul class="cv-bullets">
-                            <li>Kemampuan memanajemen waktu yang baik dalam setiap tenggat waktu (deadline)</li>
-                            <li>Kemampuan bekerja sama dalam tim dan menjalin komunikasi yang efektif</li>
-                            <li>Kemampuan analitis yang kuat untuk menyelesaikan masalah pekerjaan</li>
-                        </ul>
-                        <strong>Hard Skill:</strong>
-                        <div class="cv-skills-grid">
+                        <div class="cv-skills-group">
+                            <strong>Soft Skill:</strong>
                             <ul class="cv-bullets">
-                                <li>Microsoft Office (Word, Excel, PowerPoint)</li>
-                                <li>Pengelolaan Administrasi Data</li>
-                                <li>Bahasa Inggris (Aktif/Pasif)</li>
+                                <li>Kemampuan memanajemen waktu yang baik dalam setiap tenggat waktu (deadline)</li>
+                                <li>Kemampuan bekerja sama dalam tim dan menjalin komunikasi yang efektif</li>
+                                <li>Kemampuan analitis yang kuat untuk menyelesaikan masalah pekerjaan</li>
                             </ul>
-                            <ul class="cv-bullets">
-                                <li>Manajemen Media Sosial & E-Commerce</li>
-                                <li>Basic Foto & Video Editing</li>
-                            </ul>
+                        </div>
+                        <div class="cv-skills-group">
+                            <strong>Hard Skill:</strong>
+                            <div class="cv-skills-grid">
+                                <ul class="cv-bullets">
+                                    <li>Microsoft Office (Word, Excel, PowerPoint)</li>
+                                    <li>Pengelolaan Administrasi Data</li>
+                                    <li>Bahasa Inggris (Aktif/Pasif)</li>
+                                </ul>
+                                <ul class="cv-bullets">
+                                    <li>Manajemen Media Sosial & E-Commerce</li>
+                                    <li>Basic Foto & Video Editing</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -413,17 +449,6 @@
     </div>
 
     <script>
-        // --- DROPDOWN TOOLS MENU ---
-        function toggleDropdown() {
-            document.getElementById("toolsDropdownMenu").classList.toggle("active");
-        }
-        // Menutup dropdown jika klik di luar area
-        window.onclick = function(event) {
-            if (!event.target.closest('.dropdown')) {
-                document.getElementById("toolsDropdownMenu").classList.remove("active");
-            }
-        }
-
         // --- TEMA ---
         function toggleTheme() {
             const html = document.documentElement;
@@ -437,12 +462,9 @@
             isEn = !isEn;
             document.getElementById('langText').innerText = isEn ? 'ID' : 'EN';
             
-            // Mencari semua elemen yang memiliki atribut data-en
             const elements = document.querySelectorAll('[data-en]');
             elements.forEach(el => {
-                // Pastikan data-id sudah disimpan
                 if (!el.getAttribute('data-id')) { el.setAttribute('data-id', el.innerHTML); }
-                // Ganti teks sesuai bahasa
                 el.innerHTML = isEn ? el.getAttribute('data-en') : el.getAttribute('data-id');
             });
         }
@@ -506,24 +528,19 @@
         }
 
         function downloadATS() {
-            // Trik terbaik agar PDF 100% text-selectable dan terbaca ATS
+            // Cetak menjadi PDF via browser (100% ATS Text-selectable)
             window.print();
         }
 
-        // --- FITUR BARU: DOWNLOAD CV KE WORD (.DOC) ---
         function downloadWordCV() {
             const cvContent = document.getElementById('cv-document').innerHTML;
             
-            // Membungkus format HTML dengan struktur pembaca MS Word
-            const preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>CV ATS PDF2Hack</title><style>body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; color: black; }</style></head><body>";
+            // Bungkus dengan struktur dasar Word HTML agar terbaca rapi di MS Word
+            const preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>CV ATS PDF2Hack</title><style>body { font-family: 'Times New Roman', Times, serif; font-size: 11pt; color: black; line-height: 1.5;} h1 {font-size: 22pt; text-align: center; text-transform: uppercase;} h2 {font-size: 12pt; border-bottom: 2px solid black; text-transform: uppercase;} .cv-item-header {font-size: 11pt; font-weight: bold;} .cv-item-header span {float: right; font-weight: normal;} ul {margin-top: 2px;}</style></head><body>";
             const postHtml = "</body></html>";
             const html = preHtml + cvContent + postHtml;
 
-            // Membuat file Blob bertipe MS Word Document
-            const blob = new Blob(['\ufeff', html], {
-                type: 'application/msword'
-            });
-            
+            const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
             const url = URL.createObjectURL(blob);
             const downloadLink = document.createElement("a");
             downloadLink.href = url;
