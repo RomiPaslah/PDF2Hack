@@ -15,7 +15,7 @@ RUN npm install
 COPY . .
 
 # Buka port 3000
-EXPOSE 3000
+EXPOSE 7860
 
 # Jalankan server
 CMD [ "node", "server.js" ]
