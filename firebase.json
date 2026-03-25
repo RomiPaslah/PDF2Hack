@@ -5,6 +5,12 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/ads.txt",
+        "destination": "/ads.txt"
+      }
     ]
   }
 }
