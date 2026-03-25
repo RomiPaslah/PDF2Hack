@@ -1,49 +1,82 @@
-// Lokasi File: HelloPDF_Project/backend/server.js
-
 const express = require('express');
-const multer = require('multer');
-const libre = require('libreoffice-convert');
 const cors = require('cors');
-
-// Promisify agar kode lebih bersih (async/await)
-libre.convertAsync = require('util').promisify(libre.convert);
+const multer = require('multer');
+const { exec } = require('child_process');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
-const port = 7860;
+const port = 7860; // Port khusus untuk Hugging Face
 
+// 1. BUKA GERBANG KEAMANAN (Sangat Penting agar tidak Failed to Fetch)
 app.use(cors());
 
-// Limit file maksimal 50MB di memori
-const upload = multer({ 
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 50 * 1024 * 1024 } 
-});
+// 2. SIAPKAN FOLDER PENAMPUNG SEMENTARA
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+const upload = multer({ dest: 'uploads/' });
 
-// SATU ENDPOINT UNTUK SEMUA (Word, Excel, PPT)
-app.post('/convert/office', upload.single('file'), async (req, res) => {
-    try {
-        if (!req.file) return res.status(400).send('File tidak ditemukan.');
+// =========================================================
+// RUTE 1: KONVERSI OFFICE (WORD/EXCEL/PPT) KE PDF
+// =========================================================
+app.post('/convert/office-to-pdf', upload.single('file'), (req, res) => {
+    if (!req.file) return res.status(400).send('Tidak ada file yang diunggah.');
 
-        console.log(`Mengonversi: ${req.file.originalname}`);
-        
-        // Proses konversi ajaib LibreOffice
-        const pdfBuf = await libre.convertAsync(req.file.buffer, '.pdf', undefined);
-        
-        // Kirim balik ke pengguna
-        res.set({
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment; filename="${req.file.originalname.split('.')[0]}.pdf"`
+    const inputPath = req.file.path;
+    
+    // Perintah LibreOffice untuk mengubah ke PDF
+    const cmd = `libreoffice --headless --invisible --nologo --convert-to pdf "${inputPath}" --outdir "${uploadDir}"`;
+
+    exec(cmd, (error, stdout, stderr) => {
+        if (error) {
+            console.error("Gagal Konversi ke PDF:", error);
+            return res.status(500).send('Terjadi kesalahan saat konversi.');
+        }
+
+        // Cari file PDF hasil konversi
+        const outputFileName = req.file.filename + '.pdf';
+        const outputPath = path.join(uploadDir, outputFileName);
+
+        // Kirim file ke HP pengguna, lalu hapus sampah filenya agar server tidak penuh
+        res.download(outputPath, 'Hasil_Konversi_PDF2Hack.pdf', (err) => {
+            if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+            if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
         });
-        
-        res.send(pdfBuf);
-        console.log('Selesai!');
-
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Gagal melakukan konversi. Pastikan LibreOffice terinstal.');
-    }
+    });
 });
 
+// =========================================================
+// RUTE 2: KONVERSI PDF KE WORD (DOCX)
+// =========================================================
+app.post('/convert/pdf-to-office', upload.single('file'), (req, res) => {
+    if (!req.file) return res.status(400).send('Tidak ada file yang diunggah.');
+
+    const inputPath = req.file.path;
+    
+    // "Mantra Khusus" LibreOffice untuk mengubah PDF ke Word (DOCX)
+    const cmd = `libreoffice --headless --invisible --nologo --infilter="writer_pdf_import" --convert-to docx:"MS Word 2007 XML" "${inputPath}" --outdir "${uploadDir}"`;
+
+    exec(cmd, (error, stdout, stderr) => {
+        if (error) {
+            console.error("Gagal Konversi ke Word:", error);
+            return res.status(500).send('Terjadi kesalahan saat konversi.');
+        }
+
+        // Cari file DOCX hasil konversi
+        const outputFileName = req.file.filename + '.docx';
+        const outputPath = path.join(uploadDir, outputFileName);
+
+        // Kirim file ke HP pengguna, lalu hapus sampah filenya
+        res.download(outputPath, 'Hasil_Konversi_PDF2Hack.docx', (err) => {
+            if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+            if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+        });
+    });
+});
+
+// Jalankan Server
 app.listen(port, () => {
-    console.log(`Backend API siap di http://localhost:${port}`);
+    console.log(`Mesin PDF2Hack menyala di port ${port}`);
 });
